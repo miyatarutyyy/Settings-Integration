@@ -62,6 +62,15 @@ home.fileまたはxdg.configFileを使用して設定ファイルを配置する
 
 回答:
 
+共通:
+
+* Nix設定リポジトリには秘密値を平文で入れない。
+* 宣言的に配布したい秘密情報は`sops-nix`を第一候補にする。
+* age鍵はホストまたはユーザーごとに分け、秘密値の復号対象を必要最小限にする。
+* SSH秘密鍵、GPG秘密鍵、ブラウザprofile、keyring、Claude/Codexなどのログイン状態は、Nix storeへ置かず暗号化バックアップまたは再ログインで扱う。
+* GitHub CLI、Cloudflare Wrangler、Kaggle、Qiita CLIなどのOAuth tokenは、原則として移行後に再ログインする。
+* `.env`はプロジェクト単位で扱い、共通dotfilesには含めない。必要なものだけ暗号化バックアップする。
+* `pass`は日常的な手入力secretの保存先として必要になった場合に導入する。初期構成では`sops-nix`と再ログイン運用を優先する。
 
 ## 2. デスクトップ環境
 
@@ -69,7 +78,7 @@ home.fileまたはxdg.configFileを使用して設定ファイルを配置する
 
 Sway と niri のどちらを標準にするか。両方残す場合、どちらを主環境にするか。
 
-回答: niri を標準に、どちらもそうする
+回答: niri を標準にする。両ホストとも主環境は niri に寄せる。Sway は `trt-ryzen7` の既存設定参照用または復旧用として必要になった場合だけ残す。
 
 
 ### 2.2 セッション起動方法
@@ -93,15 +102,6 @@ Display ManagerなしでTTYから手動起動する方式も、通常運用に�
 ### 2.3 xdg-desktop-portal
 
 画面共有、スクリーンショット、OBS のために portal をどう構成するか。
-
-回答:
-
-
-### 2.4 ロック・idle
-
-`swaylock`、`hyprlock`、`swayidle` などをどう使うか。
-
-回答:### 2.3 xdg-desktop-portal
 
 回答:
 
@@ -158,8 +158,6 @@ thinkpad-l480:
 * 一定時間操作がない場合は自動サスペンドする。
 * 蓋を閉じた場合も、ロックしてからサスペンドする。
 * AC接続中とバッテリー駆動中でサスペンド時間を分けるかは、実装時に決定する。
-
-
 
 ## 3. ターミナル・シェル
 
@@ -227,16 +225,16 @@ user systemd service で daemon 起動するか、通常起動にするか。
 
 Emacs 内では `nskk` を使うか、fcitx5-skk に寄せるか。daemon 起動時の IME 環境変数をどうするか。
 
-回答: いまのことろ fcitx5-skk を使うようにする
+回答: いまのところ fcitx5-skk を使うようにする
 
 
 ## 5. 日本語入力・キーボード
 
 ### 5.1 IME
 
-`fcitx5 + skk` を標準にするか。`mozc` も使うか。
+`fcitx5 + SKK` を標準にするか。`mozc` も使うか。
 
-回答: `fcitx5 + skk` 
+回答: `fcitx5 + SKK`
 
 
 ### 5.2 SKK 辞書
@@ -273,7 +271,7 @@ Sway 用と niri 用を分けるか、共通設定にするか。
 
 `pactl` を使うか、`wpctl` に寄せるか。
 
-回答: 
+回答: `wpctl`に寄せる。PipeWire/WirePlumberを標準にするため、Waybarのクリック操作や音量表示スクリプトも`wpctl`基準で実装する。`pactl`前提の既存設定は移行時に置き換える。
 
 
 ### 6.3 テーマカラー
@@ -289,6 +287,14 @@ Noto、JetBrains Mono Nerd、HackGen、PlemolJP など、標準フォントを�
 
 回答:
 
+共通:
+
+* UI日本語フォントは`Noto Sans CJK JP`を標準にする。
+* monospace/terminal/editorは`HackGen Console NF`を第一候補にする。
+* Nerd Fontが必要なWaybarやターミナル表示では、アイコン表示用にNerd Font対応フォントを入れる。
+* 絵文字用に`Noto Color Emoji`を入れる。
+* PlemolJPやJetBrains Mono Nerdは必要なら追加候補にするが、初期標準は増やしすぎない。
+
 
 ## 7. オーディオ・映像
 
@@ -298,12 +304,18 @@ PipeWire + WirePlumber + Pulse compatibility に統一するか。
 
 回答:
 
+PipeWire + WirePlumber + PulseAudio互換に統一する。
+ALSA/JACK/PulseAudio互換もNixOS側で有効化し、デスクトップアプリ、OBS、Bluetooth audioが同じ基盤で動くようにする。
+
 
 ### 7.2 音量GUI
 
 `pavucontrol` と `pwvucontrol` のどちらを標準にするか。
 
 回答:
+
+`pwvucontrol`を標準にする。
+`pavucontrol`はPulseAudio互換UIが必要な場合の予備として追加してもよいが、初期の標準操作は`wpctl`と`pwvucontrol`へ寄せる。
 
 
 ### 7.3 OBS・画面録画
@@ -312,12 +324,20 @@ OBS を使うか、`wf-recorder` など軽量ツール中心にするか。
 
 回答:
 
+OBSを標準の録画・配信ツールとして入れる。
+軽量な一時録画用に`wf-recorder`系のCLIを追加するかは実装時に判断する。
+画面共有と録画はPipeWire + portal前提で構成する。
+
 
 ### 7.4 Bluetooth audio
 
 Bluetooth を両ホストで有効化するか。audio codec など追加方針があるか。
 
 回答:
+
+両ホストでBluetoothを有効化する。
+Bluetooth audioはPipeWire/WirePlumberで扱う。
+codecの追加調整は、実機でヘッドセットやイヤホンの接続確認をしてから必要な範囲だけ行う。
 
 
 ## 8. 開発環境
@@ -328,12 +348,21 @@ Nix devShell / direnv に寄せるか、nvm を継続するか。
 
 回答:
 
+プロジェクトごとの`flake.nix` + `direnv`に寄せる。
+グローバルなnvmは原則使わない。
+共通で必要なNode.js、pnpm、TypeScript系LSPはHome Managerまたは共通dev toolsとして最小限だけ入れ、バージョン固定が必要なものは各プロジェクトのdevShellで管理する。
+
 
 ### 8.2 Python
 
 `uv` を標準にするか、conda を再構築するか。conda を捨てるか。
 
 回答:
+
+`uv`を標準にする。
+壊れているconda環境は丸ごと移行しない。
+Python本体やビルド依存は、プロジェクトごとのdevShellまたは`uv`の管理に寄せる。
+既存conda環境が必要になった場合だけ、環境定義を確認して再作成する。
 
 
 ### 8.3 Rust
@@ -342,12 +371,19 @@ Nix devShell / direnv に寄せるか、nvm を継続するか。
 
 回答:
 
+原則としてNix packages / devShellに寄せる。
+プロジェクトごとに必要なRust toolchain、rust-analyzer、clippy、rustfmtをdevShellで入れる。
+`rustup`は、Nixで扱いにくいnightlyや特定targetが必要になった場合だけ例外的に使う。
+
 
 ### 8.4 Java / Maven
 
 JDK21 + Maven を共通開発ツールに入れるか。
 
 回答:
+
+JDK21 + Mavenを共通開発ツールに入れる。
+授業・既存プロジェクトで別バージョンが必要な場合は、そのプロジェクトのdevShellで上書きする。
 
 
 ### 8.5 direnv / nix-direnv
@@ -356,12 +392,20 @@ JDK21 + Maven を共通開発ツールに入れるか。
 
 回答:
 
+`.envrc` + `flake.nix` + `nix-direnv`に寄せる。
+共通設定でdirenv hookを有効化し、プロジェクト側で必要な開発環境を宣言する。
+`.envrc`は実行許可が必要なため、信頼したリポジトリだけ`direnv allow`する運用にする。
+
 
 ### 8.6 TeX / Arduino / TypeScript
 
 TeX、Arduino、TypeScript language server などを共通ツールに入れるか。
 
 回答:
+
+TeX、Arduino、TypeScript language serverは共通ツール候補に入れる。
+ただしサイズが大きいTeXやArduino関連パッケージは、常時必要な最小セットを共通にし、重いものはプロジェクトdevShellかホスト別設定へ逃がす。
+TypeScript LSPやformatterはEmacsで使う前提で導入する。
 
 
 ## 9. Git・SSH・GPG
@@ -372,12 +416,22 @@ GitHub URL rewrite、INIAD 用 includeIf、`core.sshCommand` などをどう管�
 
 回答:
 
+Home Managerの`programs.git`で管理する。
+共通のuser name/email、default branch、pull/rebase方針、diff設定を宣言する。
+GitHub personal/private/INIADの切り替えは`includeIf`とSSH host aliasで分ける。
+`core.sshCommand`は恒久設定にせず、systemd SSH proxy権限問題の回避が必要な場合だけリポジトリローカルに設定する。
+
 
 ### 9.2 SSH config
 
 GitHub personal、private、INIAD 用 host alias と鍵をどう分けるか。
 
 回答:
+
+Home Managerの`programs.ssh`でhost aliasを管理する。
+秘密鍵本体はGit管理しない。
+GitHub personal、GitHub private、INIAD用のhost aliasを分け、それぞれ明示的に`IdentityFile`を割り当てる。
+秘密鍵は暗号化バックアップから復元するか、必要に応じて再発行する。
 
 
 ### 9.3 GPG
@@ -386,12 +440,21 @@ GPG を標準で使うか。`authinfo.gpg` や commit signing を使うか。
 
 回答:
 
+GPGは標準で利用可能にする。
+`authinfo.gpg`を使う場合に備えてGPG秘密鍵は暗号化バックアップ対象にする。
+commit signingは必須にはしない。必要なリポジトリだけGit設定で有効化する。
+`trt-ryzen7`側のGPG keyboxdエラーは、移行前に秘密鍵のexport/backup可否を確認する。
+
 
 ### 9.4 GitHub CLI
 
 `gh` の認証状態を移行するか、移行後に再ログインするか。
 
 回答:
+
+`gh`の認証tokenは移行せず、移行後に`gh auth login`で再ログインする。
+`~/.config/gh/config.yml`のような秘密値を含まない設定だけ、必要ならHome Managerまたはバックアップで扱う。
+無効なtokenはバックアップ対象ではなくrotate/re-login対象にする。
 
 
 ## 10. ネットワーク・サービス
@@ -402,12 +465,20 @@ GPG を標準で使うか。`authinfo.gpg` や commit signing を使うか。
 
 回答:
 
+`iwd + DHCP`に統一する。
+既存の`thinkpad-l480`と`trt-ryzen7`の棚卸しに合わせ、NetworkManagerは初期標準にしない。
+Wi-Fi profileはSSID/PSKを文書化せず、必要なら暗号化バックアップまたは手動再設定で扱う。
+
 
 ### 10.2 Avahi
 
 Avahi / mDNS を有効化するか。
 
 回答:
+
+Avahi/mDNSは有効化する。
+ローカルネットワーク上の名前解決や開発用途で使えるようにする。
+不要な公開範囲が出ないよう、firewall設定と合わせて確認する。
 
 
 ### 10.3 Docker / Incus / Ollama
@@ -416,6 +487,11 @@ Docker、Incus、Ollama を標準で有効化するか、必要なホストだ�
 
 回答:
 
+必要なホストだけで有効化する。
+`trt-ryzen7`ではDocker、Incus、Ollamaをホスト別設定で有効化候補にする。
+`thinkpad-l480`では初期標準にせず、必要になったものだけ追加する。
+既存コンテナ、volume、model dataを移すかは、フォーマット前の最終確認で判断する。
+
 
 ### 10.4 Guix
 
@@ -423,12 +499,20 @@ Guix を NixOS 上でも併用するか、Nix に寄せるか。
 
 回答:
 
+原則としてNixに寄せる。
+Guixは初期構成では有効化しない。
+既存のGuix profileや特定用途が必要だと分かった場合だけ、ホスト別の追加項目として検討する。
+
 
 ### 10.5 電源管理
 
 TLP を使うか、power-profiles-daemon を使うか。
 
 回答:
+
+ノートPCの`thinkpad-l480`はTLPを第一候補にする。
+デスクトップの`trt-ryzen7`ではTLPを有効化しない。
+`power-profiles-daemon`との併用は避け、ホストごとにどちらか一方を選ぶ。
 
 
 ## 11. GUIアプリ・状態データ
@@ -439,12 +523,21 @@ Floorp、Firefox、Chromium など、標準ブラウザをどうするか。prof
 
 回答:
 
+Floorpを標準ブラウザ候補にする。
+Firefox/Chromiumは開発・検証用途として必要に応じて入れる。
+ブラウザprofileは秘密情報を含むため、Git管理しない。
+ログイン状態や拡張機能状態まで必要な場合だけ暗号化バックアップし、基本は再ログインで復旧する。
+
 
 ### 11.2 Discord
 
 ログイン状態を移行するか、cache を捨てて再ログインするか。
 
 回答:
+
+Discordはパッケージだけ管理し、ログイン状態は移行後に再ログインする。
+cache、GPUCache、Code Cache、Crashpadなどは捨てる。
+Local StorageやCookiesは秘密情報を含む可能性が高いため、通常は移行しない。
 
 
 ### 11.3 Steam / ゲーム
@@ -453,12 +546,21 @@ Steam やゲームデータをバックアップ対象にするか。
 
 回答:
 
+Steam本体はNixOS側で再導入する。
+ゲームデータは容量が大きいため、丸ごとバックアップするか再ダウンロードするかをタイトル単位で判断する。
+セーブデータ、PrismLauncher/Minecraftなど再取得しにくい状態データは優先してバックアップする。
+
 
 ### 11.4 Zed / Obsidian / LibreOffice / GIMP
 
 どの GUI アプリの設定を dotfiles 管理対象にするか。
 
 回答:
+
+Zed、Obsidian、LibreOffice、GIMPはパッケージ導入候補にする。
+設定ファイルは、平文で管理できる軽い設定だけHome Managerで扱う。
+Obsidian vaultやブラウザ/アプリのログイン状態はdotfilesではなくデータバックアップとして扱う。
+`~/obsidian`の実在は移行前に再確認する。
 
 
 ## 12. バックアップ・除外
@@ -469,12 +571,45 @@ dotfiles、NixOS flake、SSH鍵、SKK辞書、Emacs設定、Git repos、作業�
 
 回答:
 
+必ず移すもの:
+
+* NixOS flake / Home Manager設定リポジトリ。
+* `/etc/nixos`の現行設定。
+* `~/.config/niri`、`~/.config/waybar`、`~/.config/alacritty`、`~/.config/hypr/hyprlock.conf`相当の設定。
+* Emacs設定、特に`~/.emacs.d/init.org`、`init.el`、themes、必要なsnippetや辞書。
+* fcitx5 SKKのユーザー辞書。
+* SSH秘密鍵と公開鍵、SSH config、known_hosts。
+* GPG秘密鍵、`authinfo.gpg`または`authinfo`。
+* GitHub/開発用リポジトリと未push作業。
+* 学校・開発・個人作業データ。
+* 必要なブラウザprofile、keyring、Claude/Codex状態は暗号化バックアップ対象として別扱い。
+
 
 ### 12.2 再生成するもの
 
 `~/.cache`、`node_modules`、`.venv`、`dist`、`.next`、npm/pnpm/uv cache など、捨てるものを書く。
 
 回答:
+
+再生成するもの:
+
+* `~/.cache/*`
+* pacman/yay build cache
+* npm/pnpm/uv/pip cache
+* `node_modules`
+* `.venv`
+* Python/Node/Rustなどのビルド成果物
+* `dist`
+* `.next`
+* `.vite`
+* `target`
+* `tsconfig.tsbuildinfo`
+* browser/electron cache
+* Discord cache、GPUCache、Code Cache、Crashpad
+* Emacs native compilation cache、url cache
+* Playwright/Puppeteer cache
+* Trash
+* 壊れているconda環境
 
 
 ### 12.3 秘密混入リスクがあるもの
@@ -483,12 +618,41 @@ dotfiles、NixOS flake、SSH鍵、SKK辞書、Emacs設定、Git repos、作業�
 
 回答:
 
+秘密混入リスクがあるものは、Git管理せず暗号化バックアップまたは再ログインで扱う。
+
+対象:
+
+* ブラウザprofileとNSS DB。
+* DiscordのCookies、Local Storage、Trust Tokens。
+* GNOME keyringなどのkeyring。
+* clipboard DB。
+* `.env`。
+* Claude/Codexのcredentialsや状態ファイル。
+* GitHub CLI、Wrangler、Kaggle、Qiita CLIなどの認証ファイル。
+* SSH秘密鍵、GPG秘密鍵、authinfo。
+
+値を文書へ転記しない。
+移行前にrotateできるtoken/passwordはrotateし、移行後は再ログインを優先する。
+
 
 ## 13. 優先順位
 
 最初に実装したい順番を書く。
 
 回答:
+
+1. flake構成の土台を作る: `flake.nix`、nixpkgs、Home Manager、ホスト別module、共通module。
+2. bootできる最小NixOSを整える: loader、filesystem、hardware configuration、user、sudo/wheel。
+3. networkを復旧する: iwd + DHCP、firewall、必要ならAvahi。
+4. niriデスクトップを起動する: greetd/tuigreet、niri-session、portal、PipeWire。
+5. 入力と基本UIを復旧する: fcitx5 + SKK、keyd、Alacritty、rofi、Waybar、hyprlock/swayidle。
+6. secretsの扱いを固める: sops-nix、暗号化バックアップ、SSH/GPG、再ログイン対象の整理。
+7. Emacs環境を復旧する: Emacs daemon、straight.el、既存設定、IME連携。
+8. Git/SSH/GitHub CLIを復旧する: host alias、includeIf、gh再ログイン。
+9. 開発環境を整える: direnv/nix-direnv、Node、Python/uv、Rust、JDK/Maven、TeX、Arduino、TypeScript。
+10. ホスト別サービスを追加する: Docker、Incus、Ollama、TLP、Bluetooth。
+11. GUIアプリと状態データを戻す: Floorp、Discord、Zed、Obsidian、LibreOffice、GIMP、Steam/ゲーム。
+12. キャッシュ除外とバックアップ手順を最終確認する。
 
 
 ## 14. その他メモ
@@ -497,3 +661,6 @@ dotfiles、NixOS flake、SSH鍵、SKK辞書、Emacs設定、Git repos、作業�
 
 回答:
 
+実装時は、共通moduleを先に作りすぎず、両ホストで実際に共通化できることが確認できたものから切り出す。
+最初は`hosts/trt-ryzen7`と`hosts/thinkpad-l480`、`home/tarutyyyne`、`modules/common`程度の小さい構成にする。
+秘密情報、ブラウザprofile、ゲームデータ、コンテナvolumeは、Nix設定とは別の移行手順として扱う。
