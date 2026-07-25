@@ -1,0 +1,156 @@
+{
+  "style": "/home/trt-ryzen7/.config/waybar/style.css",
+  "height": 30,
+  "spacing": 4,
+  "modules-left": [
+    "sway/workspaces",
+    "sway/mode",
+    "sway/scratchpad",
+    "custom/media"
+  ],
+  "modules-center": [
+    "custom/localtime",
+    "custom/ime"
+  ],
+  "modules-right": [
+    "battery",
+    "pulseaudio",
+    "network",
+    "power-profiles-daemon",
+  ],
+  "sway/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "u": "0",
+      "i": "1",
+      "o": "2",
+      "p": "3",
+      "[": "4",
+      "j": "5",
+      "k": "6",
+      "l": "7",
+      ";": "8",
+      "'": "9"
+    }
+  },
+  "sway/mode": {
+    "format": "<span style=\"italic\">{}</span>"
+  },
+  "sway/scratchpad": {
+    "format": "{icon} {count}",
+    "show-empty": false,
+    "format-icons": ["", ""],
+    "tooltip": true,
+    "tooltip-format": "{app}: {title}"
+  },
+  "mpd": {
+    "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+    "format-disconnected": "Disconnected ",
+    "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+    "unknown-tag": "N/A",
+    "interval": 5,
+    "consume-icons": { "on": " " },
+    "random-icons": { "off": "<span color=\"#f53c3c\"></span> ", "on": " " },
+    "repeat-icons": { "on": " " },
+    "single-icons": { "on": "1 " },
+    "state-icons": { "paused": "", "playing": "" },
+    "tooltip-format": "MPD (connected)",
+    "tooltip-format-disconnected": "MPD (disconnected)"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": { "activated": "", "deactivated": "" }
+  },
+  "tray": {
+    "spacing": 10
+  },
+  "clock": {
+    "format": "[ {:%Z %H:%M} ]",
+    "format-alt": "{:%Y-%m-%d}]",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "interval": 60
+  },
+  "custom/localtime": {
+    "exec": "/home/trt-ryzen7/.config/waybar/scripts/localtime-display.sh",
+    "interval": 60,
+    "return-type": "json",
+    "format": "{text}",
+    "tooltip": true
+  },
+  "custom/ime": {
+    "exec": "/home/trt-ryzen7/.config/waybar/scripts/ime.sh",
+    "interval": 1,
+    "return-type": "json",
+    "format": "{text}",
+    "tooltip": true,
+    "on-click": "/home/trt-ryzen7/.config/waybar/scripts/ime-toggle.sh"
+  },
+  "cpu": {
+    "format": "{usage}% ",
+    "tooltip": false
+  },
+  "memory": { "format": "{}% " },
+  "temperature": {
+    "critical-threshold": 80,
+    "format": "{temperatureC}°C {icon}",
+    "format-icons": ["", "", ""]
+  },
+  "backlight": {
+    "format": "{percent}% {icon}",
+    "format-icons": ["", "", "", "", "", "", "", "", ""]
+  },
+  "battery": {
+    "interval": 15,
+    "states": { "warning": 50, "critical": 15 },
+
+    "format": "[ INTERNAL : {capacity}% ]",
+    "format-charging": "[ EXTERNAL : {capacity}% ]",
+    "format-plugged": "[ EXTERNAL : {capacity}% ]",
+    "format-full": "[ EXTERNAL: FULL ]"
+  },
+  "battery#bat2": { "bat": "BAT2" },
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+    "tooltip": true,
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  },
+  "network": {
+    "interval": 5,
+    "format-wifi": "[ NETWORK : LINKED ]",
+    "format-ethernet": "[ NETWORK : LINKED ]",
+    "format-linked": "[ NETWORK : LINKED ]",
+    "format-activating": "[ NETWORK : CONNECTING ]",
+    "format-disconnected": "[ NETWORK : ISOLATED ]",
+    "tooltip-format": "{ifname} · {essid}\nIPv4: {ipaddr}/{cidr}\nGW : {gwaddr}"
+  },
+  "pulseaudio": {
+    "format": "[ VOLUME : {volume}% ]",
+    "format-muted": "[ VOLUME : MUTED ]",   
+  },
+  "custom/media": {
+    "format": "{icon} {text}",
+    "return-type": "json",
+    "max-length": 40,
+    "format-icons": { "spotify": "", "default": "🎜" },
+    "escape": true,
+    "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null"
+  },
+  "custom/power": {
+    "format": "⏻ ",
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "$HOME/.config/waybar/power_menu.xml",
+    "menu-actions": {
+      "shutdown": "shutdown",
+      "reboot": "reboot",
+      "suspend": "systemctl suspend",
+      "hibernate": "systemctl hibernate"
+    }
+  }
+}
