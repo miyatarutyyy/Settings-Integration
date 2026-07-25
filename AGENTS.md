@@ -16,9 +16,19 @@
 - NixOS + Home Manager を正とする。
 - Nix flake を入口にし、NixOS module と Home Manager module で設定を管理する。
 - 共通設定とホスト別設定を明確に分ける。
+- ホスト名は PC の機種名を使う。
+- ユーザー名は、すべての PC で `tarutyyyne` に統一する。
 - 既存の Arch Linux / NixOS 設定は参考資料として扱い、無条件には取り込まない。
 - 一時的な設定、壊れている設定、再現性を損なう手動導入物は原則として破棄または再作成する。
 - 秘密鍵、APIキー、OAuth token、password、ログイン状態は平文で Git 管理しない。
+
+## 命名方針
+
+- ホスト名は、その PC の機種名または機種を識別できる名前にする。
+- ユーザー名は、どの PC でも `tarutyyyne` にする。
+- 現在 Arch Linux が入っている ThinkPad T14 Gen 5 は、NixOS 移行時にホスト名を `thinkpad-t14` へ変更する。
+- 現在の `trt-ryzen7` は移行元 Arch Linux 環境を指す旧名として扱い、最終的な NixOS 構成名には使わない。
+- `thinkpad-l480` は既存 NixOS PC のホスト名として維持する。
 
 ## 判断の軸
 
