@@ -290,6 +290,8 @@
       layer = "top";
       position = "top";
       height = 30;
+      spacing = 4;
+      reload_style_on_change = true;
 
       modules-left = [ ];
       modules-center = [ "clock" ];
@@ -302,6 +304,7 @@
       ];
 
       clock = {
+        interval = 60;
         format = "[ Asia / Tokyo | {:%H:%M} ]";
         tooltip-format = "{:%Y-%m-%d %A}";
       };
@@ -315,9 +318,13 @@
               text="SKK"
               class="ime-skk"
               ;;
-            keyboard-us|"")
+            keyboard-us)
               text="DIRECT"
               class="ime-direct"
+              ;;
+            "")
+              text="off"
+              class="ime-off"
               ;;
             *)
               text="$name"
@@ -336,24 +343,36 @@
       };
 
       memory = {
-        format = "[ MEM {percentage}% ]";
+        interval = 5;
+        format = "[ RAM: {percentage}% ]";
       };
 
       battery = {
-        format = "[ BAT {capacity}% ]";
-        format-charging = "[ CHR {capacity}% ]";
-        format-plugged = "[ AC {capacity}% ]";
+        interval = 30;
+        states = {
+          warning = 30;
+          critical = 15;
+        };
+        format = "[ INTERNAL : {capacity}% ]";
+        format-charging = "[ EXTERNAL : {capacity}% ]";
+        format-plugged = "[ EXTERNAL : {capacity}% ]";
+        format-full = "[ FULL : {capacity}% ]";
       };
 
       network = {
-        format-wifi = "[ NET {signalStrength}% ]";
-        format-ethernet = "[ ETH ]";
-        format-disconnected = "[ NET off ]";
+        interval = 5;
+        format-wifi = "[ NETWORK : LINKED ]";
+        format-ethernet = "[ NETWORK : LINKED ]";
+        format-linked = "[ NETWORK : LINKED ]";
+        format-activating = "[ NETWORK : CONNECTING ]";
+        format-disconnected = "[ NETWORK : OFFLINE ]";
+        tooltip-format = "{ifname}";
       };
 
       pulseaudio = {
-        format = "[ VOL {volume}% ]";
-        format-muted = "[ MUTED ]";
+        format = "[ VOLUME : {volume}% ]";
+        format-muted = "[ VOLUME : MUTED ]";
+        scroll-step = 5;
         on-click = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
     };
@@ -368,7 +387,8 @@
 
       window#waybar {
         background: #101010;
-        color: #eeeeee;
+        border-bottom: 1px solid #f66e25;
+        color: #f66e25;
       }
 
       #clock,
@@ -380,19 +400,33 @@
         padding: 0 10px;
       }
 
-      #clock,
+      #clock {
+        font-weight: 700;
+      }
+
       #custom-ime.ime-skk {
         color: #f66e25;
+        font-weight: 700;
       }
 
       #custom-ime.ime-direct {
         color: #eeeeee;
       }
 
-      #battery.warning,
-      #battery.critical,
+      #custom-ime.ime-off,
+      #custom-ime.ime-other,
       #network.disconnected,
       #pulseaudio.muted {
+        color: #8a8a8a;
+      }
+
+      #battery.warning:not(.charging):not(.plugged),
+      #network.activating {
+        color: #f5c542;
+      }
+
+      #battery.critical,
+      #battery.critical:not(.charging):not(.plugged) {
         color: #ff5f57;
       }
     '';
