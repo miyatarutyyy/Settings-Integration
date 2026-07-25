@@ -6,6 +6,7 @@ This repository keeps migration and environment context for multiple machines.
 
 - `inventories/thinkpad-l480-nixos.md`: current NixOS context for `thinkpad-l480` / user `tarutyyyne`.
 - `inventories/trt-ryzen7-archlinux.md`: Arch Linux to NixOS migration context for the other PC. This file is imported from the GitHub-side history.
+- `inventories/config-collection-instructions.md`: workflow for collecting existing per-application configuration files from each PC without committing secrets.
 
 ## Workflow
 
