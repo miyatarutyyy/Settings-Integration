@@ -10,7 +10,7 @@
   home.packages = with pkgs; [
     # Nix configuration tooling.
     # Official formatter for Nix code.
-    nixfmt-rfc-style
+    nixfmt
     # Nix language server for editors.
     nixd
     # Linter for Nix expressions.
@@ -42,7 +42,7 @@
     # Disk usage and mount overview.
     duf
     # Disk usage analyzer.
-    du-dust
+    dust
     # ls replacement with Git-aware display.
     eza
     # Local system information summary.
