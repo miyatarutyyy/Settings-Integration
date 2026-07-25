@@ -7,6 +7,42 @@
 {
   programs.niri.enable = true;
 
+  fonts = {
+    packages = with pkgs; [
+      hackgen-nf-font
+      liberation_ttf
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-color-emoji
+    ];
+
+    fontconfig.defaultFonts = {
+      sansSerif = [
+        "Noto Sans CJK JP"
+        "Noto Sans"
+      ];
+      monospace = [
+        "HackGen Console NF"
+        "Noto Sans Mono CJK JP"
+      ];
+      emoji = [ "Noto Color Emoji" ];
+    };
+  };
+
+  i18n.inputMethod = {
+    enable = true;
+    type = "fcitx5";
+
+    fcitx5 = {
+      waylandFrontend = true;
+      addons = with pkgs; [
+        fcitx5-skk
+        fcitx5-gtk
+        kdePackages.fcitx5-qt
+      ];
+    };
+  };
+
   services.dbus.enable = true;
 
   services.greetd = {
@@ -78,4 +114,41 @@
     greetd.enableGnomeKeyring = true;
     hyprlock = { };
   };
+
+  services.keyd = {
+    enable = true;
+
+    keyboards.default = {
+      ids = [ "*" ];
+
+      settings = {
+        main = {
+          capslock = "layer(control)";
+        };
+
+        control = {
+          b = "left";
+          f = "right";
+          p = "up";
+          n = "down";
+          a = "home";
+          e = "end";
+          h = "backspace";
+          d = "delete";
+        };
+      };
+    };
+  };
+
+  environment.etc."libinput/local-overrides.quirks".text = ''
+    [Serial Keyboards]
+    MatchUdevType=keyboard
+    MatchName=keyd virtual keyboard
+    AttrKeyboardIntegration=internal
+  '';
+
+  environment.systemPackages = with pkgs; [
+    fcitx5-configtool
+    skkDictionaries.l
+  ];
 }
