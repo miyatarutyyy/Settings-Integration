@@ -7,6 +7,7 @@
     ./modules/desktop.nix
     ./modules/development.nix
     ./modules/git.nix
+    ./modules/idle-lock.nix
     ./modules/shell.nix
   ];
 
