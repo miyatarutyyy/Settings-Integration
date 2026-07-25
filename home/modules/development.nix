@@ -29,8 +29,6 @@
     # GitHub, CI, and repository inspection.
     # GitHub Actions workflow linter.
     actionlint
-    # GitHub command-line client.
-    gh
     # Secret scanner for Git repositories and working trees.
     gitleaks
     # Graph rendering tools such as dot.

@@ -5,6 +5,7 @@
 {
   imports = [
     ./modules/development.nix
+    ./modules/git.nix
     ./modules/shell.nix
   ];
 
