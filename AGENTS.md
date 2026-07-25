@@ -26,7 +26,7 @@
 
 - ホスト名は、その PC の機種名または機種を識別できる名前にする。
 - ユーザー名は、どの PC でも `tarutyyyne` にする。
-- 現在 Arch Linux が入っている ThinkPad T14 Gen 5 は、NixOS 移行時にホスト名を `thinkpad-t14` へ変更する。
+- 現在 Arch Linux が入っている ThinkPad T14 Gen 5 は、NixOS 移行時にホスト名を `thinkpad-t14-gen5` へ変更する。
 - 現在の `trt-ryzen7` は移行元 Arch Linux 環境を指す旧名として扱い、最終的な NixOS 構成名には使わない。
 - `thinkpad-l480` は既存 NixOS PC のホスト名として維持する。
 

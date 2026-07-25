@@ -1,6 +1,6 @@
-# Host facts from inventories/trt-ryzen7-archlinux.md, checked 2026-07-23.
+# Host facts from the Arch source inventory, checked 2026-07-23.
 # Current source system: Arch Linux.
-# Planned NixOS hostname: thinkpad-t14.
+# NixOS hostname: thinkpad-t14-gen5.
 # Model: Lenovo ThinkPad T14 Gen 5
 # CPU: AMD Ryzen 7 PRO 8840U
 # GPU: AMD Radeon 780M-class iGPU, amdgpu
@@ -12,7 +12,7 @@
 { ... }:
 
 {
-  networking.hostName = "trt-ryzen7";
+  networking.hostName = "thinkpad-t14-gen5";
 
   system.stateVersion = "26.05";
 

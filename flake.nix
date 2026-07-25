@@ -50,11 +50,11 @@
     in
     {
       nixosConfigurations = {
-        trt-ryzen7 = mkHost {
-          hostname = "trt-ryzen7";
-          username = "trt-ryzen7";
-          hostModule = ./hosts/trt-ryzen7;
-          homeModule = ./home/trt-ryzen7;
+        thinkpad-t14-gen5 = mkHost {
+          hostname = "thinkpad-t14-gen5";
+          username = "tarutyyyne";
+          hostModule = ./hosts/thinkpad-t14-gen5;
+          homeModule = ./home/tarutyyyne;
         };
 
         thinkpad-l480 = mkHost {
