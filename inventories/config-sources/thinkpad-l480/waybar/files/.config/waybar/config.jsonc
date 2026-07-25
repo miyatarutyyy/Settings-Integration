@@ -1,0 +1,63 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "spacing": 4,
+  "reload_style_on_change": true,
+
+  "modules-left": [],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "custom/ime",
+    "memory",
+    "battery",
+    "network",
+    "pulseaudio"
+  ],
+
+  "clock": {
+    "interval": 60,
+    "format": "[ Asia / Tokyo | {:%H:%M} ]",
+    "tooltip-format": "{:%Y-%m-%d %A}"
+  },
+
+  "custom/ime": {
+    "exec": "~/.config/waybar/scripts/ime.sh",
+    "return-type": "json",
+    "format": "{}",
+    "interval": 1
+  },
+
+  "memory": {
+    "interval": 5,
+    "format": "[ RAM: {percentage}% ]"
+  },
+
+  "battery": {
+    "interval": 30,
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "[ INTERNAL: {capacity}% ]",
+    "format-charging": "[ EXTERNAL: {capacity}% ]",
+    "format-full": "[ FULL: {capacity}% ]"
+  },
+
+  "network": {
+    "interval": 5,
+    "format-wifi": "[ NETWORK: Wi-Fi ]",
+    "format-ethernet": "[ NETWORK: LAN ]",
+    "format-disconnected": "[ NETWORK: OFFLINE ]",
+    "tooltip-format-wifi": "{essid} {signalStrength}%"
+  },
+
+  "pulseaudio": {
+    "format": "[ VOLUME: {volume}% ]",
+    "format-muted": "[ VOLUME: MUTE ]",
+    "scroll-step": 5,
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+  }
+}

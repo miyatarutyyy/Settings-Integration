@@ -1,0 +1,87 @@
+@define-color bg #000000;
+@define-color fg #F66E25;
+@define-color muted #8a8a8a;
+@define-color accent #F66E25;
+
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Noto Sans CJK JP", "sans-serif";
+  font-size: 13px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(0, 0, 0, 0.88);
+  color: @fg;
+  border-bottom: 1px solid #F66E25;
+}
+
+/* 時刻 */
+#clock {
+  color: @fg;
+  background: transparent;
+  padding: 0 10px;
+  margin: 4px 3px;
+}
+
+/* IME */
+#custom-ime {
+  color: @accent;
+  background: transparent;
+  padding: 0 10px;
+  margin: 4px 3px;
+  font-weight: bold;
+}
+
+#custom-ime.direct {
+  color: #ff0000;
+}
+
+/* RAM */
+#memory {
+  color: @fg;
+  background: transparent;
+  padding: 0 10px;
+  margin: 4px 3px;
+}
+
+/* バッテリー */
+#battery {
+  color: @fg;
+  background: transparent;
+  padding: 0 10px;
+  margin: 4px 3px;
+}
+
+#battery.warning:not(.charging) {
+  color: #f5c542;
+}
+
+#battery.critical:not(.charging) {
+  color: #ff4b4b;
+}
+
+/* Wi-Fi */
+#network {
+  color: @fg;
+  background: transparent;
+  padding: 0 10px;
+  margin: 4px 3px;
+}
+
+#network.disconnected {
+  color: @muted;
+}
+
+/* 音量 */
+#pulseaudio {
+  color: @fg;
+  background: transparent;
+  padding: 0 10px;
+  margin: 4px 3px;
+}
+
+#pulseaudio.muted {
+  color: @muted;
+}
