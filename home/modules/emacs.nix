@@ -8,20 +8,6 @@ in
   programs.emacs = {
     enable = true;
     package = emacsPackage;
-
-    extraPackages =
-      epkgs: with epkgs; [
-        cape
-        consult
-        corfu
-        marginalia
-        nix-ts-mode
-        orderless
-        treesit-grammars.with-all-grammars
-        vertico
-        vterm
-        yasnippet
-      ];
   };
 
   services.emacs = {

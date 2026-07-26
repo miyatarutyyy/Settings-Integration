@@ -65,6 +65,28 @@
 ;; Check every second when file notifications are unavailable.
 (setq auto-revert-interval 1)
 
+;; Nix/Home Manager provides Emacs itself and external commands.
+;; straight.el owns Emacs Lisp package installation and updates.
+(setq straight-use-package-by-default t)
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        user-emacs-directory))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent
+         'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+
 (when (and (fboundp 'treesit-available-p)
            (treesit-available-p))
   (setq treesit-font-lock-level 4))
@@ -100,12 +122,8 @@
 (my/add-ts-mode "\\.tsx\\'"   'tsx-ts-mode        'tsx)
 (my/add-ts-mode "\\.ya?ml\\'" 'yaml-ts-mode       'yaml)
 
-;; nix-ts-mode is external, so load it only when installed by Nix.
-(when (and (locate-library "nix-ts-mode")
-           (my/treesit-ready-p 'nix))
-  (autoload 'nix-ts-mode "nix-ts-mode" nil t)
-  (add-to-list 'auto-mode-alist
-               '("\\.nix\\'" . nix-ts-mode)))
+(use-package nix-ts-mode
+  :mode "\\.nix\\'")
 
 ;; TABで、まずインデントし、必要なら補完を開始する。
 (setq tab-always-indent 'complete)
@@ -115,13 +133,12 @@
 ;; prog-mode-hook は TypeScript固有のhookより先に実行されるため、
 ;; Eglot接続時には yas-minor-mode が有効になっている。
 (use-package yasnippet
-  :ensure nil
   :hook (prog-mode . yas-minor-mode))
 
 ;; Language Server Protocol client.
 ;; Eglot自体は現在のEmacsに組み込まれている。
 (use-package eglot
-  :ensure nil
+  :straight nil
   :hook ((typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode        . eglot-ensure)
          (js-ts-mode         . eglot-ensure))
@@ -132,8 +149,6 @@
 
 ;; バッファ内補完候補をポップアップ表示する。
 (use-package corfu
-  :ensure nil
-  :if (locate-library "corfu")
   :custom
   ;; 入力中に自動補完する。
   (corfu-auto t)
@@ -166,8 +181,6 @@
 
 ;; 候補の照合方式。
 (use-package orderless
-  :ensure nil
-  :if (locate-library "orderless")
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
@@ -176,8 +189,6 @@
 
 ;; ファイルパスなど、LSP以外の補完候補を追加する。
 (use-package cape
-  :ensure nil
-  :if (locate-library "cape")
   :init
   ;; グローバルCAPFの後方にファイル補完を加える。
   (add-hook 'completion-at-point-functions #'cape-file t))
@@ -308,8 +319,6 @@
 (tab-bar-mode t)
 
 (use-package vterm
-  :ensure nil
-  :if (locate-library "vterm")
   :commands (vterm my/vterm-project)
   :custom
   ;; vterm が保持するスクロールバック行数。
