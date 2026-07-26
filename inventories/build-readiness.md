@@ -25,8 +25,8 @@
 - `fileSystems` を host module に入れるか、実機生成の `hardware-configuration.nix` を import するかを決める。
 - root filesystem、boot filesystem、swap の宣言を実機確認後に追加する。
 - kernel modules、initrd modules、firmware、GPU、touchpad、trackpoint など hardware-specific 設定を実機生成ファイルと照合する。
-- secrets 管理方式を確定する。初期候補は `sops-nix` だが、鍵と暗号化ファイルはまだ未作成。
-- SSH/GPG/GitHub CLI/browser/keyring/Codex/Claude などのログイン状態は Nix store に入れず、再ログインまたは暗号化バックアップ方針に分ける。
+- secrets 管理方式は現フェーズでは確定しない。まず秘密値を Git / Nix store に入れない境界だけ守る。
+- SSH/GPG/GitHub CLI/browser/keyring/Codex/Claude などのログイン状態は、初回 build の必須条件に含めず、移行直前または移行後に再ログイン / 暗号化バックアップ方針を決める。
 - 実機 build 後、niri session、Waybar、fcitx5-skk、hyprlock、swayidle、portal、PipeWire を確認する。
 
 ## thinkpad-l480
@@ -99,10 +99,11 @@ sudo efibootmgr -v
 - OAuth token は原則として移行後に再ログインする。
 - Wi-Fi profile は SSID/PSK を文書化せず、必要なら暗号化バックアップまたは手動再設定にする。
 - project `.env` は project 側で扱い、この共通 dotfiles repository には含めない。
+- `sops-nix` などの宣言的 secrets 管理は、最初の host build が通った後に必要な secret だけを対象として設計する。
 
 ## 完了条件
 
 - `thinkpad-l480` の build が通る。
 - `thinkpad-l480` の desktop session で niri / Waybar / fcitx5 / hyprlock / swayidle が確認済みになる。
 - `thinkpad-t14-gen5` の filesystem と hardware configuration が NixOS install 前提で確定する。
-- secrets の移行方法が、再ログイン、暗号化バックアップ、sops 管理のどれかに分類済みになる。
+- secrets は、値を Git / Nix store に入れない境界を維持し、詳細設計は別作業として保留されている。
