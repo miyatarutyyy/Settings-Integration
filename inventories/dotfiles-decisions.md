@@ -243,6 +243,22 @@ fcitx5 の `user.dict` と Emacs の `nskk-jisyo` をどう同期・バックア
 
 回答: 同期させたい
 
+補足:
+
+`fcitx5-skk` を標準 IME とするため、通常入力のユーザー辞書は
+`~/.local/share/fcitx5/skk/user.dict` を正とする。
+この辞書は個人語彙を含む可能性が高いため、平文のまま Git 管理しない。
+
+移行時は次のどちらかにする。
+
+* 暗号化バックアップとして退避し、新環境で同じ path へ復元する。
+* 内容を確認して問題ない範囲だけ手動で新環境へ移す。
+
+旧 Emacs 側の `nskk` は主方針から外し、`~/.emacs.d/nskk/dict-cache.eld`
+などは再生成可能な cache として扱う。
+将来 Emacs 内で `nskk` を再採用する場合だけ、`nskk-jisyo` と
+`fcitx5-skk` の同期方法を別作業として設計する。
+
 
 ### 5.3 keyd
 
