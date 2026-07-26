@@ -16,6 +16,14 @@ in
     client.enable = true;
   };
 
+  systemd.user.services.emacs.Service.Environment = [
+    "GTK_IM_MODULE=fcitx"
+    "QT_IM_MODULE=fcitx"
+    "XMODIFIERS=@im=fcitx"
+    "INPUT_METHOD=fcitx"
+    "SDL_IM_MODULE=fcitx"
+  ];
+
   home.packages = with pkgs; [
     arduino-cli
     arduino-language-server
