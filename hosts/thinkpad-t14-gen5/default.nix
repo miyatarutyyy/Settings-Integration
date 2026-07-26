@@ -20,4 +20,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   hardware.cpu.amd.updateMicrocode = true;
+
+  services.ollama.enable = true;
 }
