@@ -1,9 +1,13 @@
 { pkgs, ... }:
 
+let
+  emacsPackage = pkgs.emacs-pgtk;
+in
+
 {
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs-pgtk;
+    package = emacsPackage;
 
     extraPackages =
       epkgs: with epkgs; [
@@ -20,9 +24,16 @@
       ];
   };
 
+  services.emacs = {
+    enable = true;
+    package = emacsPackage;
+    client.enable = true;
+  };
+
   home.packages = with pkgs; [
     arduino-cli
     arduino-language-server
+    clang-tools
   ];
 
   home.file = {
