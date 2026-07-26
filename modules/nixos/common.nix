@@ -8,6 +8,7 @@
 {
   imports = [
     ./desktop.nix
+    ./host-services.nix
   ];
 
   nix.settings.experimental-features = [
@@ -27,6 +28,8 @@
     extraGroups = [
       "wheel"
       "dialout"
+      "docker"
+      "incus-admin"
     ];
     shell = pkgs.bashInteractive;
   };
