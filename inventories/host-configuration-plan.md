@@ -69,19 +69,24 @@ hosts/<hostname>/
 - `hosts/thinkpad-l480/default.nix` は hostname、stateVersion、systemd-boot、Intel microcode、zram、oomd を持つ。
 - inventory では root は ext4、`/boot` は vfat。
 - inventory では disk swap は観測されていない。
+- `inventories/thinkpad-l480-nixos.md` には 2026-07-23 時点の `lsblk -f`、`findmnt -R /`、`/etc/fstab` の要点がある。
+- root UUID と boot UUID の候補は inventory にあるが、generated hardware configuration 由来の initrd/kernel modules はまだ取り込んでいない。
 
 次に行うこと:
 
-- `hosts/thinkpad-l480/default.nix` に `./hardware.nix` import を追加する。
-- `hosts/thinkpad-l480/hardware.nix` を新規作成する。
-- `hardware.nix` は実機の `/etc/nixos/hardware-configuration.nix` または `nixos-generate-config` 結果から作る。
-- root UUID、boot UUID、filesystem option を実機で再確認する。
-- `swapDevices = [ ];` を `hardware.nix` に置くか、zram 方針だけで足りるか build 結果で確認する。
+1. `thinkpad-l480` 実機で `/etc/nixos/hardware-configuration.nix` を収集する。
+2. 同じ実機で `lsblk -f`、`findmnt -R /`、`swapon --show` を再取得する。
+3. inventory 済みの UUID 候補と実機再取得結果を照合する。
+4. 照合後に `hosts/thinkpad-l480/hardware.nix` を新規作成する。
+5. `hosts/thinkpad-l480/default.nix` に `./hardware.nix` import を追加する。
+6. `swapDevices = [ ];` を `hardware.nix` に置くか、zram 方針だけで足りるか build 結果で確認する。
+
+この PC では既存 inventory に root/boot UUID 候補があるが、kernel module 類が不足しているため、現時点では placeholder の `hardware.nix` を作らない。
 
 未確認のまま推測で入れないもの:
 
-- root filesystem UUID
-- boot filesystem UUID
+- root filesystem UUID。inventory 候補はあるが、取り込み直前に実機で再確認する
+- boot filesystem UUID。inventory 候補はあるが、取り込み直前に実機で再確認する
 - initrd kernel modules
 - external disk mount
 - Wi-Fi profile
