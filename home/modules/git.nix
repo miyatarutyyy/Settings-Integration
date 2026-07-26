@@ -6,7 +6,7 @@
 
     # Git identity and signing keys are intentionally left to a later
     # secret-aware step instead of guessing name, email, or GPG key IDs.
-    extraConfig = {
+    settings = {
       init.defaultBranch = "master";
       pull.rebase = false;
       fetch.prune = true;
@@ -29,46 +29,47 @@
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
 
-    matchBlocks = {
+    settings = {
       "github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519_github";
-        identitiesOnly = true;
-        extraOptions.AddKeysToAgent = "yes";
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519_github";
+        IdentitiesOnly = true;
+        AddKeysToAgent = "yes";
       };
 
       "github-personal" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519_github";
-        identitiesOnly = true;
-        extraOptions.AddKeysToAgent = "yes";
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519_github";
+        IdentitiesOnly = true;
+        AddKeysToAgent = "yes";
       };
 
       "github-private" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519_github";
-        identitiesOnly = true;
-        extraOptions.AddKeysToAgent = "yes";
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519_github";
+        IdentitiesOnly = true;
+        AddKeysToAgent = "yes";
       };
 
       "github-iniad" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519_github_iniad";
-        identitiesOnly = true;
-        extraOptions.AddKeysToAgent = "yes";
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519_github_iniad";
+        IdentitiesOnly = true;
+        AddKeysToAgent = "yes";
       };
 
       "github.com-iniad" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519_github_iniad";
-        identitiesOnly = true;
-        extraOptions.AddKeysToAgent = "yes";
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519_github_iniad";
+        IdentitiesOnly = true;
+        AddKeysToAgent = "yes";
       };
     };
   };

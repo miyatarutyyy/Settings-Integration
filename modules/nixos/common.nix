@@ -34,7 +34,7 @@
     shell = pkgs.bashInteractive;
   };
 
-  programs.bash.enableCompletion = true;
+  programs.bash.completion.enable = true;
 
   home-manager.backupFileExtension = "hm-backup";
 
