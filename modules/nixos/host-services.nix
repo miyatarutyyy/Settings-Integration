@@ -1,4 +1,6 @@
 {
+  networking.nftables.enable = true;
+
   virtualisation.docker.enable = true;
   virtualisation.incus.enable = true;
 

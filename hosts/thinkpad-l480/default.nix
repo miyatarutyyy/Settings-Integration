@@ -10,6 +10,10 @@
 { lib, ... }:
 
 {
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
   networking.hostName = "thinkpad-l480";
 
   system.stateVersion = "26.05";
