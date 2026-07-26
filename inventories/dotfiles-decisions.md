@@ -503,9 +503,8 @@ Docker、Incus、Ollama を標準で有効化するか、必要なホストだ�
 
 回答:
 
-必要なホストだけで有効化する。
-`trt-ryzen7`ではDocker、Incus、Ollamaをホスト別設定で有効化候補にする。
-`thinkpad-l480`では初期標準にせず、必要になったものだけ追加する。
+DockerとIncusは両ホストで有効化する。
+Ollamaは`thinkpad-t14-gen5`だけで有効化する。
 既存コンテナ、volume、model dataを移すかは、フォーマット前の最終確認で判断する。
 
 
@@ -526,9 +525,8 @@ TLP を使うか、power-profiles-daemon を使うか。
 
 回答:
 
-ノートPCの`thinkpad-l480`はTLPを第一候補にする。
-デスクトップの`trt-ryzen7`ではTLPを有効化しない。
-`power-profiles-daemon`との併用は避け、ホストごとにどちらか一方を選ぶ。
+両ホストでTLPを採用する。
+`power-profiles-daemon`との併用は避ける。
 
 
 ## 11. GUIアプリ・状態データ
