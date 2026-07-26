@@ -1,6 +1,62 @@
 # Settings Integration
 
-This repository keeps migration and environment context for multiple machines.
+This repository keeps the future source-of-truth NixOS and Home Manager
+configuration for two Linux laptops.
+
+The current target is a single shared Git repository with common modules, host
+specific NixOS configuration, and documented migration decisions. Existing Arch
+Linux and NixOS settings are treated as source material, not as files to copy
+blindly.
+
+## Current Shape
+
+- `flake.nix`: entrypoint for all NixOS configurations.
+- `flake.lock`: pinned input revisions for reproducible evaluation.
+- `modules/nixos/`: shared NixOS modules.
+- `hosts/<hostname>/`: host-specific NixOS configuration.
+- `home/common.nix`: shared Home Manager entrypoint.
+- `home/tarutyyyne/`: user-level Home Manager entrypoint.
+- `home/modules/`: shared Home Manager modules for desktop, shell, Git,
+  development tools, and idle/lock behavior.
+- `inventories/`: source inventories, comparison notes, migration decisions,
+  and readiness plans.
+
+## Implemented Configuration
+
+- Hosts: `thinkpad-l480` and `thinkpad-t14-gen5`.
+- Common NixOS: flakes, unfree packages, redistributable firmware, locale,
+  user creation, iwd, OpenSSH, desktop runtime.
+- Desktop runtime: niri, greetd/tuigreet, fcitx5-skk, fonts, PipeWire,
+  xdg-desktop-portal, GNOME keyring, keyd.
+- Home Manager: Bash, Git, GitHub CLI, SSH host aliases, development CLI tools,
+  Alacritty, Rofi, niri config, Waybar, Hyprlock, and swayidle.
+- Collected source settings: niri, Waybar, and Hyprlock source material from
+  the existing machines.
+
+## Not Yet Verified
+
+This repository has not yet been evaluated on a NixOS machine after the latest
+configuration changes. This Arch-side working environment does not provide
+`nix` or `nixos-rebuild`.
+
+The first build target should be `thinkpad-l480`:
+
+```bash
+nix flake check
+nixos-rebuild build --flake .#thinkpad-l480
+```
+
+`thinkpad-t14-gen5` still needs final NixOS install-time filesystem and hardware
+configuration before it can be treated as a complete build target.
+
+## Next References
+
+- `inventories/build-readiness.md`: build status, missing host data, and
+  verification order.
+- `inventories/host-configuration-plan.md`: where hardware configuration,
+  filesystems, boot, and swap should live.
+- `inventories/dotfiles-decisions.md`: user decisions and migration policy.
+- `inventories/config-comparisons/`: per-application comparison notes.
 
 ## Inventories
 
