@@ -6,19 +6,19 @@
 
 ## 現在できていること
 
-- `flake.nix` は `thinkpad-t14-gen5` と `thinkpad-l480` の `nixosConfigurations` を定義している。
+- `flake.nix` は `thinkpad-l480` と `thinkpad-t14-gen5` の `nixosConfigurations` を定義している。
 - `flake.lock` は作成済み。
 - 共通 NixOS module は flakes、locale、user、iwd、OpenSSH、desktop runtime を持つ。
 - 共通 Home Manager module は shell、Git/SSH、development tools、niri、Waybar、hyprlock、swayidle を持つ。
 - `thinkpad-l480` と `thinkpad-t14-gen5` の host module は hostname、stateVersion、boot loader、CPU microcode の最小設定を持つ。
 
-## まだ build 可否が未確認
+## build 確認結果
 
-- この Arch 側作業環境には `nix` / `nixos-rebuild` がないため、flake 評価は未実施。
-- `nix flake check` の結果は未確認。
-- `nixos-rebuild build --flake .#thinkpad-l480` の結果は未確認。
+- 2026-07-26 に Arch 側作業環境で Nix 2.35.1 を導入し、Nix daemon が active であることを確認した。
+- `nix --extra-experimental-features 'nix-command flakes' build .#nixosConfigurations.thinkpad-l480.config.system.build.toplevel` は成功した。
+- `nix flake check` は、`thinkpad-t14-gen5` を `nixosConfigurations` に公開したままだと root filesystem 未指定で失敗したため、T14 の hardware configuration を追加した。
 - `nixos-rebuild build --flake .#thinkpad-t14-gen5` の結果は未確認。
-- Home Manager option 名、package 名、niri / hyprlock / Waybar / swayidle の組み合わせが現在の nixpkgs で通るか未確認。
+- Home Manager option 名、package 名、niri / hyprlock / Waybar / swayidle の組み合わせは `thinkpad-l480` の toplevel build では評価・生成まで通った。
 
 ## host 共通で必要な未実装項目
 
@@ -43,7 +43,7 @@
 - 現在の `/etc/nixos/hardware-configuration.nix` 相当を収集または再生成する。
 - `fileSystems."/"` と `fileSystems."/boot"` を UUID 付きで宣言するか、収集した hardware configuration から import する。
 - `/boot` の UUID、root の UUID、filesystem options を root 権限で再確認する。
-- `nixos-rebuild build --flake .#thinkpad-l480` を実行する。
+- `thinkpad-l480` 実機で `nixos-rebuild build --flake .#thinkpad-l480` を実行する。
 - `swayidle` service が user graphical session で起動するか確認する。
 - lid close 時の lock-before-suspend が必要か実機で確認する。
 
@@ -58,20 +58,22 @@
 
 未実装 / 要確認:
 
-- NixOS install 時に `nixos-generate-config` で `hardware-configuration.nix` を生成する。
-- EFI system partition、root filesystem、swap の最終構成を決める。
-- `/efi` または `/boot` の実際の mountpoint と bootloader entry を root 権限で確認する。
+- Arch source system 上で `nixos-generate-config --show-hardware-config`、`lsblk -f`、`findmnt --real`、`bootctl status`、`lspci -nnk` を確認し、`hosts/thinkpad-t14-gen5/hardware-configuration.nix` を追加した。
+- root filesystem は ext4 `c1e9791a-ef8d-4a06-8342-795046372c11`、ESP は vfat `D94E-D64E` mounted at `/efi` として宣言済み。
+- swap device は観測されておらず、`swapDevices = [ ];` として宣言済み。
+- NixOS install 時には `/efi` と root filesystem が同じ構成でよいか再確認する。
 - Qualcomm Wi-Fi、AMD GPU、firmware、Bluetooth、power management を実機で確認する。
-- `nixos-rebuild build --flake .#thinkpad-t14-gen5` は、インストール先 filesystem 情報を入れるまで通らない可能性が高い。
+- `nixos-rebuild build --flake .#thinkpad-t14-gen5` は、実機NixOS環境ではまだ未実行。
 
 ## 推奨する確認順序
 
 1. `thinkpad-l480` で repository を最新化する。
-2. `thinkpad-l480` で `nix flake check` を実行する。
-3. `thinkpad-l480` で `nixos-rebuild build --flake .#thinkpad-l480` を実行する。
-4. 失敗した場合、package rename、option rename、module import のどれかに分類して最小修正する。
-5. build が通ったら、実機 session で niri、Waybar、fcitx5、hyprlock、swayidle を確認する。
-6. `thinkpad-t14-gen5` は NixOS install 方針と filesystem 情報を確定してから build 対象として仕上げる。
+2. 任意の Nix 環境で `nix flake check` を実行する。
+3. 任意の Nix 環境で `nix build .#nixosConfigurations.thinkpad-l480.config.system.build.toplevel` を実行する。
+4. `thinkpad-l480` 実機で `nixos-rebuild build --flake .#thinkpad-l480` を実行する。
+5. 失敗した場合、package rename、option rename、module import のどれかに分類して最小修正する。
+6. build が通ったら、実機 session で niri、Waybar、fcitx5、hyprlock、swayidle を確認する。
+7. `thinkpad-t14-gen5` は NixOS install 前に root/ESP UUID と `/efi` mountpoint を再確認する。
 
 ## 実行コマンド
 
@@ -80,6 +82,7 @@
 ```bash
 git pull --rebase=false origin master
 nix flake check
+nix build .#nixosConfigurations.thinkpad-l480.config.system.build.toplevel
 nixos-rebuild build --flake .#thinkpad-l480
 ```
 
@@ -90,6 +93,7 @@ sudo nixos-generate-config --root /mnt
 sudo lsblk -f
 sudo bootctl status
 sudo efibootmgr -v
+nixos-rebuild build --flake .#thinkpad-t14-gen5
 ```
 
 ## secrets 方針
@@ -103,7 +107,7 @@ sudo efibootmgr -v
 
 ## 完了条件
 
-- `thinkpad-l480` の build が通る。
+- `thinkpad-l480` の toplevel build が通る。
 - `thinkpad-l480` の desktop session で niri / Waybar / fcitx5 / hyprlock / swayidle が確認済みになる。
 - `thinkpad-t14-gen5` の filesystem と hardware configuration が NixOS install 前提で確定する。
 - secrets は、値を Git / Nix store に入れない境界を維持し、詳細設計は別作業として保留されている。

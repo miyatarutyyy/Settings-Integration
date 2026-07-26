@@ -10,7 +10,7 @@ blindly.
 
 ## Current Shape
 
-- `flake.nix`: entrypoint for all NixOS configurations.
+- `flake.nix`: entrypoint for build-ready NixOS configurations.
 - `flake.lock`: pinned input revisions for reproducible evaluation.
 - `modules/nixos/`: shared NixOS modules.
 - `hosts/<hostname>/`: host-specific NixOS configuration.
@@ -23,7 +23,7 @@ blindly.
 
 ## Implemented Configuration
 
-- Hosts: `thinkpad-l480` and `thinkpad-t14-gen5`.
+- Build-ready hosts: `thinkpad-l480` and `thinkpad-t14-gen5`.
 - Common NixOS: flakes, unfree packages, redistributable firmware, locale,
   user creation, iwd, OpenSSH, desktop runtime.
 - Desktop runtime: niri, greetd/tuigreet, fcitx5-skk, fonts, PipeWire,
@@ -35,19 +35,21 @@ blindly.
 
 ## Not Yet Verified
 
-This repository has not yet been evaluated on a NixOS machine after the latest
-configuration changes. This Arch-side working environment does not provide
-`nix` or `nixos-rebuild`.
+This repository can be evaluated with Nix from the Arch-side working
+environment. On 2026-07-26, the `thinkpad-l480` NixOS toplevel build succeeded
+with Nix 2.35.1; `thinkpad-t14-gen5` has host hardware declared from the Arch
+source system and should be verified before switching the installed OS.
 
 The first build target should be `thinkpad-l480`:
 
 ```bash
 nix flake check
-nixos-rebuild build --flake .#thinkpad-l480
+nix build .#nixosConfigurations.thinkpad-l480.config.system.build.toplevel
 ```
 
-`thinkpad-t14-gen5` still needs final NixOS install-time filesystem and hardware
-configuration before it can be treated as a complete build target.
+`thinkpad-t14-gen5` can be evaluated as a flake build target, but the actual
+NixOS install should still re-check the ESP and root filesystem before
+switching.
 
 ## Next References
 
