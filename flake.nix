@@ -56,6 +56,13 @@
           homeModule = ./home/tarutyyyne;
         };
 
+        thinkpad-t14-gen5-usb = mkHost {
+          hostname = "thinkpad-t14-gen5-usb";
+          username = "tarutyyyne";
+          hostModule = ./hosts/thinkpad-t14-gen5-usb;
+          homeModule = ./home/tarutyyyne;
+        };
+
         thinkpad-l480 = mkHost {
           hostname = "thinkpad-l480";
           username = "tarutyyyne";
