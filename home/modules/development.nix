@@ -69,5 +69,9 @@
     zip
     # Zip archive extractor.
     unzip
+
+    # AI agent tools.
+    codex
+    claude-code
   ];
 }
