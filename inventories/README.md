@@ -33,6 +33,8 @@
   - `nix flake check` と `nixos-rebuild build` に向けた未確認項目と確認順序。
 - `host-configuration-plan.md`
   - `hosts/<hostname>/default.nix` と `hosts/<hostname>/hardware.nix` の役割分担。
+- `thinkpad-t14-gen5-nixos-install.md`
+  - ThinkPad T14 Gen 5 の内蔵 SSD を消去して NixOS を本番 install する手順。
 - `config-collection-instructions.md`
   - 既存設定を秘密情報なしで収集するための作業手順。
 
