@@ -16,12 +16,33 @@
       font = {
         normal.family = "HackGen Console NF";
         size = 11;
+        offset.y = 1;
       };
 
       colors.primary = {
         background = "#101010";
-        foreground = "#eeeeee";
+        foreground = "#F66E25";
       };
+
+      colors.normal = {
+        red = "#ff0000";
+        blue = "#F66E25";
+      };
+
+      colors.bright = {
+        red = "#ff5555";
+        blue = "#F66E25";
+      };
+
+      general.ipc_socket = true;
+
+      keyboard.bindings = [
+        {
+          key = "Enter";
+          mods = "Control";
+          chars = "\\r";
+        }
+      ];
     };
   };
 
