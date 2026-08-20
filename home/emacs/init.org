@@ -85,6 +85,7 @@ M-x customize とかで勝手に custom-set-variables を init.el に書き込�
 
 * 【読込】
 自動で revert させるもんぬぇえ
+あと direnv も読み込ませるぬぇ
 #+BEGIN_SRC emacs-lisp
   ;; Reload visited files automatically when they change on disk.
   (global-auto-revert-mode 1)
@@ -124,12 +125,34 @@ straight.el と use-package に任せる。
   (straight-use-package 'use-package)
 #+END_SRC
 
+* 【読込】
+direnv を有効化
+#+BEGIN_SRC emacs-lisp
+  ;; devShell の g++/python3 をバッファに取り込む
+  (use-package envrc
+    :hook (after-init . envrc-global-mode))
+
+  ;; org-babel で bash を有効化（driver は bash なので必須）
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)))
+
+  ;; 実行のたびに確認を出さない（任意）
+  (setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
 * 【解析】
 Tree-sitter!!!
 #+BEGIN_SRC emacs-lisp
   (when (and (fboundp 'treesit-available-p)
              (treesit-available-p))
     (setq treesit-font-lock-level 4))
+
+  (when (boundp 'treesit-extra-load-path)
+    (dolist (dir '("~/.nix-profile/lib"
+                   "/etc/profiles/per-user/tarutyyyne/lib"))
+      (add-to-list 'treesit-extra-load-path
+                   (expand-file-name dir))))
 
   (defun my/treesit-ready-p (lang)
     "Return non-nil if Tree-sitter grammar for LANG is available."
@@ -239,6 +262,18 @@ LSP が作った候補を Corfu で表示する
     (add-hook 'completion-at-point-functions #'cape-file t))
 #+end_src
 
+* 【整列】
+#+BEGIN_SRC emacs-lisp
+(use-package apheleia
+  :config
+  (apheleia-global-mode +1))
+#+END_SRC
+
+* 【時空】
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :commands (magit-status magit-dispatch))
+#+END_SRC
 * 【組込】
 #+BEGIN_SRC emacs-lisp
   ;; Arduino development environment.
@@ -434,6 +469,87 @@ Org を書け。
     "Open ~/.emacs.d/init.org."
     (interactive)
     (find-file (locate-user-emacs-file "init.org")))
+#+END_SRC
+
+* 【雛形】
+org ファイルは org ファイルから生まれる。
+Markdown の入り込む余地などない。
+
+#+BEGIN_SRC emacs-lisp
+  ;; Root directory for personal Org files.
+  (defconst my/org-directory
+    (expand-file-name "~/Org/")
+    "Root directory for my Org files.")
+
+  ;; Directory containing Org file templates.
+  (defconst my/org-template-directory
+    (expand-file-name "templates/" my/org-directory)
+    "Directory containing Org templates.")
+
+  (defun my/org--replace-placeholder (placeholder value)
+    "Replace all occurrences of PLACEHOLDER with VALUE in current buffer."
+    (goto-char (point-min))
+    (while (search-forward placeholder nil t)
+      (replace-match value t t)))
+
+  (defun my/org-new-atcoder ()
+    "Create a new AtCoder Org file from atcoder-template.org."
+    (interactive)
+
+    (let* ((contest
+            (read-string "Contest: "))
+           (problem
+            (read-string "Problem: "))
+           (url
+            (read-string "URL: "))
+
+           (contest-name (upcase contest))
+           (problem-name (upcase problem))
+
+           (contest-directory
+            (expand-file-name
+             (downcase contest)
+             (expand-file-name "atcoder/" my/org-directory)))
+
+           (destination
+            (expand-file-name
+             (concat (downcase problem) ".org")
+             contest-directory))
+
+           (template
+            (expand-file-name
+             "atcoder-template.org"
+             my/org-template-directory)))
+
+      ;; Template must exist.
+      (unless (file-readable-p template)
+        (user-error "Template does not exist: %s" template))
+
+      ;; Do not overwrite an existing note.
+      (when (file-exists-p destination)
+        (user-error "File already exists: %s" destination))
+
+      ;; Create ~/org/atcoder/abcXXX/ when necessary.
+      (make-directory contest-directory t)
+
+      ;; Open destination and insert template.
+      (find-file destination)
+      (insert-file-contents template)
+
+      ;; Expand placeholders.
+      (my/org--replace-placeholder "{{CONTEST}}" contest-name)
+      (my/org--replace-placeholder "{{PROBLEM}}" problem-name)
+      (my/org--replace-placeholder "{{DATE}}"
+                                   (format-time-string "%Y-%m-%d"))
+      (my/org--replace-placeholder "{{URL}}" url)
+
+      ;; Move point to {{CURSOR}} and remove it.
+      (goto-char (point-min))
+      (if (search-forward "{{CURSOR}}" nil t)
+          (replace-match "")
+        (goto-char (point-min)))
+
+      (save-buffer)))
 #+END_SRC
 
 * 【記事】

@@ -87,9 +87,27 @@
 
 (straight-use-package 'use-package)
 
+;; devShell の g++/python3 をバッファに取り込む
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
+
+;; org-babel で bash を有効化（driver は bash なので必須）
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell . t)))
+
+;; 実行のたびに確認を出さない（任意）
+(setq org-confirm-babel-evaluate nil)
+
 (when (and (fboundp 'treesit-available-p)
            (treesit-available-p))
   (setq treesit-font-lock-level 4))
+
+(when (boundp 'treesit-extra-load-path)
+  (dolist (dir '("~/.nix-profile/lib"
+                 "/etc/profiles/per-user/tarutyyyne/lib"))
+    (add-to-list 'treesit-extra-load-path
+                 (expand-file-name dir))))
 
 (defun my/treesit-ready-p (lang)
   "Return non-nil if Tree-sitter grammar for LANG is available."
@@ -192,6 +210,13 @@
   :init
   ;; グローバルCAPFの後方にファイル補完を加える。
   (add-hook 'completion-at-point-functions #'cape-file t))
+
+(use-package apheleia
+  :config
+  (apheleia-global-mode +1))
+
+(use-package magit
+  :commands (magit-status magit-dispatch))
 
 ;; Arduino development environment.
 ;; .ino files are C++-like, but Arduino needs board-aware tooling.
@@ -373,6 +398,81 @@
   "Open ~/.emacs.d/init.org."
   (interactive)
   (find-file (locate-user-emacs-file "init.org")))
+
+;; Root directory for personal Org files.
+(defconst my/org-directory
+  (expand-file-name "~/Org/")
+  "Root directory for my Org files.")
+
+;; Directory containing Org file templates.
+(defconst my/org-template-directory
+  (expand-file-name "templates/" my/org-directory)
+  "Directory containing Org templates.")
+
+(defun my/org--replace-placeholder (placeholder value)
+  "Replace all occurrences of PLACEHOLDER with VALUE in current buffer."
+  (goto-char (point-min))
+  (while (search-forward placeholder nil t)
+    (replace-match value t t)))
+
+(defun my/org-new-atcoder ()
+  "Create a new AtCoder Org file from atcoder-template.org."
+  (interactive)
+
+  (let* ((contest
+          (read-string "Contest: "))
+         (problem
+          (read-string "Problem: "))
+         (url
+          (read-string "URL: "))
+
+         (contest-name (upcase contest))
+         (problem-name (upcase problem))
+
+         (contest-directory
+          (expand-file-name
+           (downcase contest)
+           (expand-file-name "atcoder/" my/org-directory)))
+
+         (destination
+          (expand-file-name
+           (concat (downcase problem) ".org")
+           contest-directory))
+
+         (template
+          (expand-file-name
+           "atcoder-template.org"
+           my/org-template-directory)))
+
+    ;; Template must exist.
+    (unless (file-readable-p template)
+      (user-error "Template does not exist: %s" template))
+
+    ;; Do not overwrite an existing note.
+    (when (file-exists-p destination)
+      (user-error "File already exists: %s" destination))
+
+    ;; Create ~/org/atcoder/abcXXX/ when necessary.
+    (make-directory contest-directory t)
+
+    ;; Open destination and insert template.
+    (find-file destination)
+    (insert-file-contents template)
+
+    ;; Expand placeholders.
+    (my/org--replace-placeholder "{{CONTEST}}" contest-name)
+    (my/org--replace-placeholder "{{PROBLEM}}" problem-name)
+    (my/org--replace-placeholder "{{DATE}}"
+                                 (format-time-string "%Y-%m-%d"))
+    (my/org--replace-placeholder "{{URL}}" url)
+
+    ;; Move point to {{CURSOR}} and remove it.
+    (goto-char (point-min))
+    (if (search-forward "{{CURSOR}}" nil t)
+        (replace-match "")
+      (goto-char (point-min)))
+
+    (save-buffer)))
 
 (when (locate-library "ox-hub")
   (require 'ox-hub))
