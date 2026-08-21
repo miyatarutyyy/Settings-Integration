@@ -35,6 +35,7 @@
   };
 
   programs.bash.completion.enable = true;
+  programs.nix-ld.enable = true;
 
   home-manager.backupFileExtension = "hm-backup";
 
