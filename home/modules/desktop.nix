@@ -4,6 +4,21 @@
   # niri itself, greetd, portals, and PAM are system-level concerns.
   # This module keeps the user-facing tools and dotfiles together.
 
+  systemd.user.services.gnome-keyring-secrets = {
+    Unit = {
+      Description = "GNOME Keyring Secret Service";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      ExecStart = "${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --start --foreground --components=secrets";
+      Restart = "on-failure";
+    };
+
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   programs.alacritty = {
     enable = true;
 
@@ -435,6 +450,8 @@
     brightnessctl
     # Desktop notification command-line client.
     libnotify
+    # Secret Service CLI for checking GNOME Keyring availability.
+    libsecret
     # XWayland bridge for niri sessions.
     xwayland-satellite
   ];
