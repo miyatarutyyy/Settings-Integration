@@ -2,6 +2,17 @@
 
 let
   emacsPackage = pkgs.emacs-pgtk;
+  typeScriptTreeSitterGrammars = pkgs.tree-sitter.withPlugins (
+    grammars: with grammars; [
+      tree-sitter-typescript
+      tree-sitter-tsx
+    ]
+  );
+  emacsTreeSitterGrammars = pkgs.runCommand "emacs-treesit-grammars" { } ''
+    mkdir -p "$out/lib"
+    ln -s ${typeScriptTreeSitterGrammars}/typescript.so "$out/lib/libtree-sitter-typescript.so"
+    ln -s ${typeScriptTreeSitterGrammars}/tsx.so "$out/lib/libtree-sitter-tsx.so"
+  '';
 in
 
 {
@@ -28,6 +39,9 @@ in
     arduino-cli
     arduino-language-server
     clang-tools
+    emacsTreeSitterGrammars
+    typescript
+    typescript-language-server
   ];
 
   home.file = {
