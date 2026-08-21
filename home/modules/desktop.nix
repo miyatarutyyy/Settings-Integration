@@ -20,7 +20,7 @@
       };
 
       colors.primary = {
-        background = "#101010";
+        background = "#000000";
         foreground = "#F66E25";
       };
 
@@ -105,7 +105,7 @@
     }
 
     spawn-at-startup "${pkgs.waybar}/bin/waybar"
-    spawn-at-startup "${pkgs.fcitx5}/bin/fcitx5" "-d"
+    spawn-at-startup "/run/current-system/sw/bin/fcitx5" "-d"
 
     hotkey-overlay {}
 
