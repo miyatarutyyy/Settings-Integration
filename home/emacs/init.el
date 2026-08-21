@@ -366,6 +366,23 @@
          (default-directory root))
     (vterm buffer-name)))
 
+(use-package elcord
+  ;; 起動時に読み込んで elcord-mode を有効化する。
+  ;; :commands を付けると「呼ばれるまでロードしない」遅延指定になり、
+  ;; その elcord-mode を呼ぶ :config が実行されずデッドロックするので付けない。
+  :demand t
+  :custom
+  ;; メインアイコンを現在の major-mode のものにする。
+  (elcord-use-major-mode-as-main-icon t)
+
+  ;; 経過時間を表示する。
+  (elcord-display-elapsed t)
+
+  ;; Discord が未起動でも静かに再接続を待つ。
+  (elcord-quiet t)
+  :config
+  (elcord-mode))
+
 ;; Org is build into Emacs, but I explicitly install it.
   (require 'org)
 
