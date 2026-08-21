@@ -6,5 +6,6 @@
     discord
     mpv
     pwvucontrol
+    element-desktop
   ];
 }
